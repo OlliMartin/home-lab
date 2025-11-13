@@ -31,7 +31,7 @@ k8s-monitoring:
     kubelet:
       enabled: true
     kubeletResource:
-      enabled: false
+      enabled: true
     cadvisor:
       enabled: true
     apiServer:
