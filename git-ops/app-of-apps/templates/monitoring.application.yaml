@@ -37,7 +37,7 @@ spec:
     targetRevision: main
   destination:
     name: 'in-cluster'
-    namespace: metrics
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true
