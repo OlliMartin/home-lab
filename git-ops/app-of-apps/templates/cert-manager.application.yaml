@@ -18,7 +18,7 @@ spec:
     targetRevision: main
   destination:
     name: 'in-cluster'
-    namespace: metrics
+    namespace: cert-manager
   ignoreDifferences:
     - group: admissionregistration.k8s.io
       kind: ValidatingWebhookConfiguration
