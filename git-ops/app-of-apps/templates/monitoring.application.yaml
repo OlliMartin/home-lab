@@ -19,8 +19,8 @@ spec:
             name: oma-homelab
           destinations:
             - name: otlp-gateway
-              type: otlp
-              url: otlp.acaad.dev:4317
+              type: otlphttp
+              url: otlp.acaad.dev:4318
               metrics:
                 enabled: true
               logs:
