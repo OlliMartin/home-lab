@@ -20,6 +20,7 @@ spec:
           destinations:
             - name: otlp-gateway
               type: otlp
+              protocol: "http"
               url: https://otlp.acaad.dev:4318
               metrics:
                 enabled: true
