@@ -24,7 +24,7 @@ spec:
               tls:
                 insecure: true
               metrics:
-                enabled: false
+                enabled: true
               logs:
                 enabled: true
               traces:
