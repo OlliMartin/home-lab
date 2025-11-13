@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2000"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    helm:
+      valueFiles:
+        - values.yaml
+      valuesObject:
+        k8s-monitoring:
+          cluster:
+            name: oma-homelab
+          destinations:
+            - name: otlp-gateway
+              type: otlp
+              url: otlp.acaad.dev:4317
+              tls:
+                insecure: true
+              metrics:
+                enabled: true
+              logs:
+                enabled: true
+              traces:
+                enabled: true
+              processors:
+                batch:
+                  size: 1000
+                  maxSize: 2000
+                  timeout: 500ms
+    path: todo/monitoring
+    repoURL: todo
+    targetRevision: main
+  destination:
+    name: 'in-cluster'
+    namespace: metrics
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true

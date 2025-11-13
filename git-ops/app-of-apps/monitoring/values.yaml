@@ -1,0 +1,500 @@
+k8s-monitoring:
+  cluster: # Cluster configuration, including the cluster name
+    name: "injected:AOA"
+
+  destinations:
+
+  integrations:
+    collector: alloy-singleton
+    nodeLabels:
+      nodepool: true
+      region: true
+      availability_zone: true
+      node_role: true
+      os: true
+      architecture: true
+      instance_type: true
+
+  # Features to enable, which determines what data to collect
+  clusterMetrics:
+    enabled: true
+    collector: alloy-singleton
+    nodeLabels:
+      nodePool: true
+      region: true
+      availabilityZone: true
+      nodeRole: true
+      os: true
+      architecture: true
+      instanceType: true
+
+    kubelet:
+      enabled: true
+    kubeletResource:
+      enabled: false
+    cadvisor:
+      enabled: true
+    apiServer:
+      enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeDNS:
+      enabled: false
+    kubeProxy:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+    kube-state-metrics:
+      enabled: true
+      discoveryType: service
+      metricsTuning:
+        useDefaultAllowList: true
+        includeMetrics: [(.+)]
+        excludeMetrics:
+          - kube_validatingwebhookconfiguration_webhook_clientconfig_service
+          - kube_mutatingwebhookconfiguration_webhook_clientconfig_service
+      namespacesDenylist:
+        - kube-system
+        - gatekeeper-system
+        - kube-public
+        - kobe-node-lease
+    node-exporter:
+      enabled: true
+      deploy: true
+      metricsTuning:
+        useIntegrationAllowList: true
+    windows-exporter:
+      enabled: false
+      deploy: false
+    kepler:
+      enabled: false
+      deploy: false
+    opencost:
+      enabled: false
+      deploy: false
+
+  clusterEvents:
+    enabled: true
+    collector: alloy-singleton
+    namespaces:
+      - argocd
+      - mender
+      - mongodb
+      - external-secret-provider
+      - cert-manager
+      - ingress-nginx
+      - hub
+
+  nodeLogs:
+    enabled: false
+
+  podLogs:
+    enabled: true
+    collector: alloy-singleton
+    nodeLabels:
+      nodePool: true
+      region: true
+      availabilityZone: true
+      nodeRole: true
+      os: true
+      architecture: true
+      instanceType: true
+
+    structuredMetadata:
+      nodepool:
+      region:
+      availability_zone:
+      node_role:
+      os:
+      architecture:
+      instance_type:
+
+    labelsToKeep:
+      - app
+      - app_kubernetes_io_name
+      - component
+      - container
+      - job
+      - level
+      - namespace
+      - pod
+      - service_name
+
+    gatherMethod: kubernetesApi
+    namespaces:
+      - argocd
+      - mender
+      - mongodb
+      - external-secret-provider
+      - cert-manager
+      - ingress-nginx
+
+  applicationObservability:
+    enabled: true
+    receivers:
+      otlp:
+        grpc:
+          enabled: true
+    processors:
+      k8sattributes:
+        metadata:
+          - k8s.namespace.name
+          - k8s.pod.name
+          - k8s.deployment.name
+          - k8s.statefulset.name
+          - k8s.daemonset.name
+          - k8s.cronjob.name
+          - k8s.job.name
+          - k8s.node.name
+          - k8s.pod.uid
+          - k8s.pod.start_time
+          - k8s.container.name
+
+  annotationAutodiscovery:
+    enabled: false
+
+  # Telemetry collector definitions
+  alloy-receiver:
+    enabled: true
+    service:
+      internalTrafficPolicy: Internal
+  alloy-metrics:
+    enabled: false
+  alloy-logs:
+    enabled: false
+  alloy-profiles:
+    enabled: false
+  alloy-singleton: # This is referenced when clusterEvents is enabled.
+    enabled: true
+    extraConfig: |
+      declare "argocd_integration" {
+        argument "metrics_destinations" {
+          comment = "Must be a list of metric destinations where collected metrics should be forwarded to"
+        }
+        declare "argocd_integration_discovery" {
+          argument "namespaces" {
+            comment = "The namespaces to look for targets in (default: [] is all namespaces)"
+            optional = true
+          }
+          argument "field_selectors" {
+            comment = "The field selectors to use to find matching targets (default: [])"
+            optional = true
+          }
+          argument "label_selectors" {
+            comment = "The label selectors to use to find matching targets (default: [\"app.kubernetes.io/name=argocd\"])"
+            optional = true
+          }
+          argument "port_name" {
+            comment = "The of the port to scrape metrics from (default: http-metrics)"
+            optional = true
+          }
+          // argocd service discovery for all of the services
+          discovery.kubernetes "argocd_services" {
+            role = "service"
+            selectors {
+              role = "service"
+              field = string.join(coalesce(argument.field_selectors.value, []), ",")
+              label = string.join(coalesce(argument.label_selectors.value, ["app.kubernetes.io/part-of=argocd"]), ",")
+            }
+            namespaces {
+              names = coalesce(argument.namespaces.value, [])
+            }
+            attach_metadata {
+              node = true
+            }
+          }
+          // argocd relabelings (pre-scrape)
+          discovery.relabel "argocd_services" {
+            targets = discovery.kubernetes.argocd_services.targets
+
+            // keep only the specified metrics port name
+            rule {
+              source_labels = [
+                "__meta_kubernetes_service_port_name",
+              ]
+              regex = coalesce(argument.port_name.value, "http-metrics")
+              action = "keep"
+            }
+
+            // Drop the DEX Server, we do not use it.
+            rule {
+              source_labels = [
+                "__meta_kubernetes_service_name",
+              ]
+              regex = "argocd-dex-server"
+              action = "drop"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              target_label = "service"
+            }
+
+            // the argocd dashboard expects the job to be the service name
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              target_label = "job"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+
+            // set a source label
+            rule {
+              action = "replace"
+              replacement = "kubernetes"
+              target_label = "source"
+            }
+          }
+          export "output" {
+            value = discovery.relabel.argocd_services.output
+          }
+        }
+        declare "argocd_integration_scrape" {
+          argument "targets" {
+            comment = "Must be a list() of targets"
+          }
+          argument "forward_to" {
+            comment = "Must be a list(MetricsReceiver) where collected metrics should be forwarded to"
+          }
+          argument "job_label" {
+            comment = "The job label to add for all Mimir metrics (default: integrations/argocd)"
+            optional = true
+          }
+          argument "keep_metrics" {
+            comment = "A regular expression of metrics to keep (default: see below)"
+            optional = true
+          }
+          argument "drop_metrics" {
+            comment = "A regular expression of metrics to drop (default: see below)"
+            optional = true
+          }
+          argument "scrape_interval" {
+            comment = "How often to scrape metrics from the targets (default: 60s)"
+            optional = true
+          }
+          argument "scrape_timeout" {
+            comment = "The timeout for scraping metrics from the targets (default: 10s)"
+            optional = true
+          }
+          argument "scrape_protocols" {
+            comment = "The scrape protocols to use for scraping metrics"
+            optional = true
+          }
+          argument "scrape_classic_histograms" {
+            comment = "Whether to scrape classic histograms (default: false)."
+            optional = true
+          }
+          argument "max_cache_size" {
+            comment = "The maximum number of elements to hold in the relabeling cache (default: 100000).  This should be at least 2x-5x your largest scrape target or samples appended rate."
+            optional = true
+          }
+          argument "clustering" {
+            comment = "Whether or not clustering should be enabled (default: false)"
+            optional = true
+          }
+          prometheus.scrape "argocd" {
+            job_name = coalesce(argument.job_label.value, "integrations/argocd")
+            forward_to = [prometheus.relabel.argocd.receiver]
+            targets = argument.targets.value
+            scrape_interval = coalesce(argument.scrape_interval.value, "60s")
+            scrape_timeout = coalesce(argument.scrape_timeout.value, "10s")
+            scrape_protocols = argument.scrape_protocols.value
+            scrape_classic_histograms = argument.scrape_classic_histograms.value
+            clustering {
+              enabled = coalesce(argument.clustering.value, false)
+            }
+          }
+          // argocd metric relabelings (post-scrape)
+          prometheus.relabel "argocd" {
+            forward_to = argument.forward_to.value
+            max_cache_size = coalesce(argument.max_cache_size.value, 100000)
+            // drop metrics that match the drop_metrics regex
+          }
+        }
+        argocd_integration_discovery "argocd" {
+          namespaces = ["argocd"]
+          label_selectors = []
+          port_name = "metrics"
+        }
+        argocd_integration_scrape  "argocd" {
+          targets = argocd_integration_discovery.argocd.output
+          job_label = "integrations/argocd"
+          clustering = true
+          keep_metrics = ".*"
+          scrape_interval = "30s"
+          scrape_timeout = "10s"
+          scrape_protocols = ["OpenMetricsText1.0.0","OpenMetricsText0.0.1","PrometheusText0.0.4"]
+          scrape_classic_histograms = false
+          max_cache_size = 100000
+          forward_to = argument.metrics_destinations.value
+        }
+      }
+      argocd_integration "integration" {
+        metrics_destinations = [
+          otelcol.receiver.prometheus.otlp_gateway.receiver,
+        ]
+      }
+
+      declare "certmanager_integration" {
+        argument "metrics_destinations" {
+          comment = "Must be a list of metric destinations where collected metrics should be forwarded to"
+        }
+        declare "certmanager_integration_discovery" {
+          argument "namespaces" {
+            comment = "The namespaces to look for targets in (default: [] is all namespaces)"
+            optional = true
+          }
+          argument "field_selectors" {
+            comment = "The field selectors to use to find matching targets (default: [])"
+            optional = true
+          }
+          argument "label_selectors" {
+            comment = "The label selectors to use to find matching targets (default: [\"app.kubernetes.io/name=cert-manager\"])"
+            optional = true
+          }
+          argument "port_name" {
+            comment = "The of the port to scrape metrics from (default: http-metrics)"
+            optional = true
+          }
+          // certmanager service discovery for all of the services
+          discovery.kubernetes "certmanager_services" {
+            role = "service"
+            selectors {
+              role = "service"
+              field = string.join(coalesce(argument.field_selectors.value, []), ",")
+              label = string.join(coalesce(argument.label_selectors.value, ["app.kubernetes.io/name=cert-manager"]), ",")
+            }
+            namespaces {
+              names = coalesce(argument.namespaces.value, [])
+            }
+            attach_metadata {
+              node = true
+            }
+          }
+          // certmanager relabelings (pre-scrape)
+          discovery.relabel "certmanager_services" {
+            targets = discovery.kubernetes.certmanager_services.targets
+
+            // keep only the specified metrics port name
+            rule {
+              source_labels = [
+                "__meta_kubernetes_service_port_name",
+              ]
+              regex = coalesce(argument.port_name.value, "http-metrics")
+              action = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              target_label = "service"
+            }
+
+            // the certmanager dashboard expects the job to be the service name
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              target_label = "job"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+
+            // set a source label
+            rule {
+              action = "replace"
+              replacement = "kubernetes"
+              target_label = "source"
+            }
+          }
+          export "output" {
+            value = discovery.relabel.certmanager_services.output
+          }
+        }
+        declare "certmanager_integration_scrape" {
+          argument "targets" {
+            comment = "Must be a list() of targets"
+          }
+          argument "forward_to" {
+            comment = "Must be a list(MetricsReceiver) where collected metrics should be forwarded to"
+          }
+          argument "job_label" {
+            comment = "The job label to add for all Mimir metrics (default: integrations/certmanager)"
+            optional = true
+          }
+          argument "keep_metrics" {
+            comment = "A regular expression of metrics to keep (default: see below)"
+            optional = true
+          }
+          argument "drop_metrics" {
+            comment = "A regular expression of metrics to drop (default: see below)"
+            optional = true
+          }
+          argument "scrape_interval" {
+            comment = "How often to scrape metrics from the targets (default: 60s)"
+            optional = true
+          }
+          argument "scrape_timeout" {
+            comment = "The timeout for scraping metrics from the targets (default: 10s)"
+            optional = true
+          }
+          argument "scrape_protocols" {
+            comment = "The scrape protocols to use for scraping metrics"
+            optional = true
+          }
+          argument "scrape_classic_histograms" {
+            comment = "Whether to scrape classic histograms (default: false)."
+            optional = true
+          }
+          argument "max_cache_size" {
+            comment = "The maximum number of elements to hold in the relabeling cache (default: 100000).  This should be at least 2x-5x your largest scrape target or samples appended rate."
+            optional = true
+          }
+          argument "clustering" {
+            comment = "Whether or not clustering should be enabled (default: false)"
+            optional = true
+          }
+          prometheus.scrape "certmanager" {
+            job_name = coalesce(argument.job_label.value, "integrations/certmanager")
+            forward_to = [prometheus.relabel.certmanager.receiver]
+            targets = argument.targets.value
+            scrape_interval = coalesce(argument.scrape_interval.value, "60s")
+            scrape_timeout = coalesce(argument.scrape_timeout.value, "10s")
+            scrape_protocols = argument.scrape_protocols.value
+            scrape_classic_histograms = argument.scrape_classic_histograms.value
+            clustering {
+              enabled = coalesce(argument.clustering.value, false)
+            }
+          }
+          // certmanager metric relabelings (post-scrape)
+          prometheus.relabel "certmanager" {
+            forward_to = argument.forward_to.value
+            max_cache_size = coalesce(argument.max_cache_size.value, 100000)
+            // drop metrics that match the drop_metrics regex
+          }
+        }
+        certmanager_integration_discovery "certmanager" {
+          namespaces = ["cert-manager"]
+          port_name = "tcp-prometheus-servicemonitor"
+          label_selectors = []
+        }
+        certmanager_integration_scrape  "certmanager" {
+          targets = certmanager_integration_discovery.certmanager.output
+          job_label = "integrations/certmanager"
+          clustering = true
+          keep_metrics = ".*"
+          scrape_interval = "60s"
+          scrape_timeout = "10s"
+          scrape_protocols = ["OpenMetricsText1.0.0","OpenMetricsText0.0.1","PrometheusText0.0.4"]
+          scrape_classic_histograms = false
+          max_cache_size = 100000
+          forward_to = argument.metrics_destinations.value
+        }
+      }
+      certmanager_integration "integration" {
+        metrics_destinations = [
+          otelcol.receiver.prometheus.otlp_gateway.receiver,
+        ]
+      }
+

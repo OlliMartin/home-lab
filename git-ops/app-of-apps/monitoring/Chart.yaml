@@ -1,0 +1,12 @@
+apiVersion: v2
+name: otelcol-cluster
+description: A Helm chart for the OpenTelemetry Cluster Collector
+
+type: application
+
+version: 0.1.0
+
+dependencies:
+  - name: k8s-monitoring
+    version: 3.5.3
+    repository: https://grafana.github.io/helm-charts
