@@ -13,12 +13,12 @@ spec:
     helm:
       valueFiles:
         - values.yaml
-    path: todo/cert-manager-provider
-    repoURL: todo
+    path: git-ops/cert-manager-provider
+    repoURL: https://github.com/OlliMartin/home-lab
     targetRevision: main
   destination:
-    server: "https://kubernetes.default.svc"
-    namespace: cert-manager
+    name: 'in-cluster'
+    namespace: metrics
   ignoreDifferences:
     - group: admissionregistration.k8s.io
       kind: ValidatingWebhookConfiguration

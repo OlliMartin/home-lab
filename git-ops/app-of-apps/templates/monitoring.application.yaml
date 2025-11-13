@@ -24,7 +24,7 @@ spec:
               tls:
                 insecure: true
               metrics:
-                enabled: true
+                enabled: false
               logs:
                 enabled: true
               traces:
@@ -34,8 +34,8 @@ spec:
                   size: 1000
                   maxSize: 2000
                   timeout: 500ms
-    path: todo/monitoring
-    repoURL: todo
+    path: git-ops/monitoring
+    repoURL: https://github.com/OlliMartin/home-lab
     targetRevision: main
   destination:
     name: 'in-cluster'
