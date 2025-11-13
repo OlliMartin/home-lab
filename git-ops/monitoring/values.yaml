@@ -130,11 +130,11 @@ k8s-monitoring:
       - ingress-nginx
 
   applicationObservability:
-    enabled: true
-    receivers:
-      otlp:
-        grpc:
-          enabled: true
+    enabled: false
+#    receivers:
+#      otlp:
+#        grpc:
+#          enabled: true
     processors:
       k8sattributes:
         metadata:
@@ -155,7 +155,7 @@ k8s-monitoring:
 
   # Telemetry collector definitions
   alloy-receiver:
-    enabled: true
+    enabled: false
     service:
       internalTrafficPolicy: Internal
   alloy-metrics:
