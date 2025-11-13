@@ -21,8 +21,6 @@ spec:
             - name: otlp-gateway
               type: otlp
               url: otlp.acaad.dev:4317
-              tls:
-                insecure: true
               metrics:
                 enabled: true
               logs:
