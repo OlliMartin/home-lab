@@ -78,12 +78,8 @@ k8s-monitoring:
     collector: alloy-singleton
     namespaces:
       - argocd
-      - mender
-      - mongodb
       - external-secret-provider
       - cert-manager
-      - ingress-nginx
-      - hub
 
   nodeLogs:
     enabled: false
