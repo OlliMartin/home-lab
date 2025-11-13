@@ -153,7 +153,7 @@ k8s-monitoring:
   alloy-receiver:
     enabled: true
     service:
-      internalTrafficPolicy: Internal
+      internalTrafficPolicy: Local
   alloy-metrics:
     enabled: false
   alloy-logs:
