@@ -130,11 +130,11 @@ k8s-monitoring:
       - ingress-nginx
 
   applicationObservability:
-    enabled: false
-#    receivers:
-#      otlp:
-#        grpc:
-#          enabled: true
+    enabled: true
+    receivers:
+      otlp:
+        grpc:
+          enabled: true
     processors:
       k8sattributes:
         metadata:
