@@ -32,7 +32,7 @@ vault:
       enabled: true
       size: 50Gi
       storageClass: "default"
-      mountPath: /vault/data
+      mountPath: /mnt/vault/data
       annotations:
         volume.beta.kubernetes.io/storage-provisioner: "rook-ceph.rbd.csi.ceph.com"
       
