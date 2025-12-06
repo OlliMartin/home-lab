@@ -15,6 +15,10 @@ vault:
              tls_key_file  = "/vault/userconfig/vault-ha-tls/vault.key"
              tls_client_ca_file = "/vault/userconfig/vault-ha-tls/vault.ca"
           }
+          listener "tcp" {
+            address     = "0.0.0.0:8202"
+            tls_disable = 1
+          }
           storage "file" {
             path = "/vault/data"
           }
@@ -49,6 +53,18 @@ vault:
       limits:
         memory: 1Gi
         cpu: 1000m
+        
+    readinessProbe:
+      enabled: true
+      httpGet:
+        port: 8202
+      path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+    livenessProbe:
+      enabled: true
+      httpGet:
+        port: 8202
+      path: "/v1/sys/health?standbyok=true"
+      initialDelaySeconds: 60
   ui:
     enabled: true
     serviceType: "LoadBalancer"
