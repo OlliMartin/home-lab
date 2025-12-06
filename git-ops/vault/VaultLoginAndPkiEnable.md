@@ -34,9 +34,9 @@ vault auth enable approle
 vault write -f auth/approle/role/cert-role secret_id_ttl=768h \
   token_ttl=768h token_max_ttl=768h token_policies=pki
   
-vault read auth/approle/role/cert-role/role-id
+vault read auth/approle/role/cert-role/role-id # Note down role-id for cert-manager
 vault write -f auth/approle/role/cert-role/secret-id
 
 sudo kubectl create secret generic cert-manager-vault-approle \
-  -n cert-manager --from-literal=secretId=33460154-ff99-06bd-707b-3dbe48fd2ad3
+  -n cert-manager --from-literal=secretId=$secretId
 ```
