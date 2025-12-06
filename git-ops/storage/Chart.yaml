@@ -1,0 +1,12 @@
+apiVersion: v2
+name: ingress
+description: A Helm chart for storage based on rook and ceph
+
+type: application
+
+version: 0.1.0
+
+dependencies:
+  - name: rook-ceph
+    version: 1.18.8
+    repository: https://charts.rook.io/release
