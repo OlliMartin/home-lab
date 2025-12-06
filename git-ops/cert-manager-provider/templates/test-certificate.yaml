@@ -7,9 +7,9 @@ spec:
   secretName: vault-cm-intermediate-cert-tls
   issuerRef:
     name: "cluster-issuer"
-  commonName: www.example.com
+  commonName: argo.internal
   dnsNames:
-    - www.example.com
+    - www.argo.internal
   usages:
     - digital signature
     - key encipherment
