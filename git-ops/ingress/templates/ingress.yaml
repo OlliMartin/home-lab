@@ -16,10 +16,21 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: argocd-server
+                name: argo-bridge
                 port:
                   number: 443
   tls:
     - hosts:
         - argo.internal
       secretName: tls-argo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argo-bridge  # In ingress namespace
+spec:
+  type: ExternalName
+  externalName: argocd-server.argocd.svc.cluster.local  # Full FQDN of target service
+  ports:
+    - port: 443
+      targetPort: 443
