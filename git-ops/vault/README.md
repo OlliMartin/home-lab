@@ -5,3 +5,4 @@ The documented process follow [this](https://developer.hashicorp.com/vault/tutor
 
 1. Connect to one of the nodes, preferably master via ssh 
 2. Follow the provided tutorial
+3. Set up the [PKI](https://developer.hashicorp.com/vault/docs/secrets/pki/setup#setup).
