@@ -62,7 +62,7 @@ vault:
       enabled: true
       port: 8202
       path: "/v1/sys/health?standbyok=true"
-      initialDelaySeconds: 60
+      initialDelaySeconds: 600
   ui:
     enabled: true # TBD: Needed?
     serviceType: "LoadBalancer"
