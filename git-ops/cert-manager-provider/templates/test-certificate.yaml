@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault-cm-intermediate-cert
+  namespace: default
+spec:
+  secretName: vault-cm-intermediate-cert-tls
+  issuerRef:
+    name: "cluster-issuer"
+  commonName: www.example.com
+  dnsNames:
+    - www.example.com
+  usages:
+    - digital signature
+    - key encipherment
+    - cert sign
+    - client auth
+    - server auth 
