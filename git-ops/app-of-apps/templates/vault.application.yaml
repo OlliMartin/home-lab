@@ -19,6 +19,11 @@ spec:
   destination:
     name: 'in-cluster'
     namespace: vault
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jqPathExpressions:
+        - '.webhooks[]?.clientConfig.caBundle'
   syncPolicy:
     automated:
       prune: true
