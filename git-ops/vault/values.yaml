@@ -20,6 +20,14 @@ vault:
       VAULT_CACERT: /vault/userconfig/vault-ha-tls/vault.ca
       VAULT_TLSCERT: /vault/userconfig/vault-ha-tls/vault.crt
       VAULT_TLSKEY: /vault/userconfig/vault-ha-tls/vault.key
+    
+    dataStorage:
+      enabled: true
+      size: 50Gi
+      storageClass: "default"
+      mountPath: /vault/data
+      annotations:
+        volume.beta.kubernetes.io/storage-provisioner: "rook-ceph.rbd.csi.ceph.com"
       
     volumes:
       - name: userconfig-vault-ha-tls
