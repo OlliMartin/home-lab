@@ -1,0 +1,7 @@
+apiVersion: v2
+name: ingress
+description: A Helm chart for general Kubernetes Ingress resources
+
+type: application
+
+version: 0.1.0
