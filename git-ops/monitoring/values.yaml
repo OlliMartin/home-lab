@@ -157,7 +157,7 @@ k8s-monitoring:
   alloy-metrics:
     enabled: false
   alloy-logs:
-    enabled: false
+    enabled: true
   alloy-profiles:
     enabled: false
   alloy-singleton: # This is referenced when clusterEvents is enabled.
