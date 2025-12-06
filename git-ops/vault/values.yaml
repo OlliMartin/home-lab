@@ -15,6 +15,9 @@ vault:
              tls_key_file  = "/vault/userconfig/vault-ha-tls/vault.key"
              tls_client_ca_file = "/vault/userconfig/vault-ha-tls/vault.ca"
           }
+          storage "file" {
+            path = "/vault/data"
+          }
 
     extraEnvironmentVars:
       VAULT_CACERT: /vault/userconfig/vault-ha-tls/vault.ca
