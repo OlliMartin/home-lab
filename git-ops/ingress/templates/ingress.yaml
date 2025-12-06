@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: argo
+  namespace: argo
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
@@ -23,14 +24,3 @@ spec:
     - hosts:
         - argo.internal
       secretName: tls-argo
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: argo-bridge  # In ingress namespace
-spec:
-  type: ExternalName
-  externalName: argocd-server.argocd.svc.cluster.local  # Full FQDN of target service
-  ports:
-    - port: 443
-      targetPort: 443
