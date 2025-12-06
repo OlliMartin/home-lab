@@ -5,4 +5,5 @@ The documented process follow [this](https://developer.hashicorp.com/vault/tutor
 
 1. Connect to one of the nodes, preferably master via ssh 
 2. Follow the provided tutorial
-3. Set up the [PKI](https://developer.hashicorp.com/vault/docs/secrets/pki/setup#setup).
+3. Initialize, Unseal the vault. Make sure to copy the initial root token somewhere safe. It is required to [log in](https://developer.hashicorp.com/vault/docs/commands/login). 
+4. Set up the [PKI](https://developer.hashicorp.com/vault/docs/secrets/pki/setup#setup).

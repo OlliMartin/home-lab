@@ -1,14 +1,16 @@
 apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
+kind: Issuer
 metadata:
   name: "cluster-issuer"
 spec:
-  acme:
-    server: {{ .Values.acmeServer }}
-    email: {{ .Values.issuer.email }}
-    privateKeySecretRef:
-      name: account-key
-    solvers:
-      - http01:
-          ingress:
-            class: {{ .Values.ingress.className }}
+  vault:
+    path: pki_int/root/sign-intermediate
+    server: https://vault.default:8200
+    auth:
+      appRole:
+        path: approle
+        # RoleId taken from vault app role
+        roleId: 0896263f-977d-832f-afcd-6e0fcc9803fc
+        secretRef:
+          name: cert-manager-vault-approle
+          key: secretId
