@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ingress
+  name: vault
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "20" # Depends on cert-manager
+    argocd.argoproj.io/sync-wave: "0"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,12 +13,12 @@ spec:
     helm:
       valueFiles:
         - values.yaml
-    path: git-ops/ingress
+    path: git-ops/vault
     repoURL: https://github.com/OlliMartin/home-lab
     targetRevision: main
   destination:
     name: 'in-cluster'
-    namespace: ingress
+    namespace: vault
   syncPolicy:
     automated:
       prune: true

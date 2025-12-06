@@ -1,0 +1,12 @@
+apiVersion: v2
+name: ingress
+description: A Helm chart for Hashicorps Vault. Used for PKI.
+
+type: application
+
+version: 0.1.0
+
+dependencies:
+  - name: vault
+    version: 0.31.0
+    repository: https://helm.releases.hashicorp.com
