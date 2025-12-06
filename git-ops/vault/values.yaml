@@ -16,7 +16,8 @@ vault:
              tls_client_ca_file = "/vault/userconfig/vault-ha-tls/vault.ca"
           }
           listener "tcp" {
-            address     = "0.0.0.0:8202"
+            address     = "0.0.0.0:8203"
+            cluster_address = "[::]:8202"
             tls_disable = 1
           }
           storage "file" {
@@ -66,7 +67,7 @@ vault:
       path: "/v1/sys/health?standbyok=true"
       initialDelaySeconds: 60
   ui:
-    enabled: true
+    enabled: false # TBD: Needed?
     serviceType: "LoadBalancer"
     serviceNodePort: null
     externalPort: 8200
