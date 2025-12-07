@@ -9,8 +9,6 @@ spec:
     kind: ClusterIssuer
     name: "cluster-issuer"
   commonName: argo.internal
-  dnsNames:
-    - argo.internal
   usages:
     - digital signature
     - key encipherment
