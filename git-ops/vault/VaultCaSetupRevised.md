@@ -147,3 +147,5 @@ path "pki*" {
   capabilities = [ "create", "read", "update", "delete", "list", "sudo", "patch" ]
 }
 ```
+
+## Importing the Certificate Chain in Windows

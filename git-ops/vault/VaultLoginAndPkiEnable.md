@@ -1,3 +1,5 @@
+# THESE STEPS ARE OUTDATED/WRONG/OBSOLETE
+
 ```sh
 sudo kubectl port-forward vault-0 -n vault 8202:8202
 export VAULT_ADDR='http://127.0.0.1:8202'
