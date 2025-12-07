@@ -11,7 +11,7 @@ spec:
       appRole:
         path: approle
         # RoleId taken from vault app role
-        roleId: 504cd7c7-2412-701f-5be2-affbcd2381cc
+        roleId: 1d9e212f-7893-ab95-2159-03721cef16f9
         secretRef:
           name: cert-manager-vault-approle
           key: secretId
