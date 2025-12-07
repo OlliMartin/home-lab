@@ -24,3 +24,5 @@ spec:
           port: 443
           scheme: https
           serversTransport: backend-trust
+  tls:
+    secretName: cert-internal-argo-tls
