@@ -1,0 +1,48 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert-internal-vault
+  namespace: vault
+spec:
+  secretName: cert-internal-vault-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: "cluster-issuer"
+  commonName: vault.internal
+  dnsNames:
+    - www.vault.internal
+  usages:
+    - digital signature
+    - key encipherment
+    - cert sign
+    - client auth
+    - server auth
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: backend-trust-vault
+  namespace: vault
+spec:
+#  rootCAs:
+#    secret:
+#      name: backend-ca-secret  # Secret with ca.crt
+  insecureSkipVerify: true
+  serverName: "vault.internal"  # Optional SNI override
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ir-vault
+  namespace: vault
+spec:
+  routes:
+    - kind: Rule
+      match: Host(`vault.internal`)
+      services:
+        - name: vault-ui
+          port: 8200
+          scheme: https
+          serversTransport: backend-trust-vault
+  tls:
+    secretName: cert-internal-vault-tls

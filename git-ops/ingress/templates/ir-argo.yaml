@@ -2,7 +2,7 @@ apiVersion: traefik.io/v1alpha1
 kind: ServersTransport
 metadata:
   name: backend-trust
-  namespace: argocd  # Match your Traefik namespace
+  namespace: argocd
 spec:
 #  rootCAs:
 #    secret:
