@@ -115,4 +115,35 @@ vault write -f auth/approle/role/cert-role secret_id_ttl=24h \
   
 vault read auth/approle/role/cert-role/role-id # Note down role-id for cert-manager
 vault write -f auth/approle/role/cert-role/secret-id # We'll create a secret in kubernetes for that.
+
+# Verify:
+# Note how we issue against the /cert-manager endpoint, i.e. the role we created above.
+vault write pki_int/issue/cert-manager common_name="test.internal" ttl="1h"
+```
+
+### Creating the Vault Policy
+
+The policy can be created via the vault UI.
+It must be attached to the role `cert-manager`, which can be found under:
+- Vault UI
+- Access
+- Entities
+- entity_[HEXCODE]
+- Policies Tab
+
+```sh
+# Enable secrets engine
+path "sys/mounts/*" {
+  capabilities = [ "create", "read", "update", "delete", "list" ]
+}
+
+# List enabled secrets engine
+path "sys/mounts" {
+  capabilities = [ "read", "list" ]
+}
+
+# Work with pki secrets engine
+path "pki*" {
+  capabilities = [ "create", "read", "update", "delete", "list", "sudo", "patch" ]
+}
 ```

@@ -77,4 +77,6 @@ vault write pki_int/roles/internal-intermediate \
 vault write pki_int/issue/internal-intermediate common_name="test.internal" ttl="24h"
 ```
 
+
+
 6fb8252a-b713-a2a4-10d8-b557173aec9f
