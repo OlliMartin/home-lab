@@ -10,7 +10,7 @@ spec:
     name: "cluster-issuer"
   commonName: argo.internal
   dnsNames:
-    - www.argo.internal
+    - argo.internal
   usages:
     - digital signature
     - key encipherment

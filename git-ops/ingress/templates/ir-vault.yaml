@@ -10,7 +10,7 @@ spec:
     name: "cluster-issuer"
   commonName: vault.internal
   dnsNames:
-    - www.vault.internal
+    - vault.internal
   usages:
     - digital signature
     - key encipherment
