@@ -5,7 +5,7 @@ metadata:
 spec:
   secretName: cert-internal-argo-tls
   issuerRef:
-    kind: Issuer
+    kind: ClusterIssuer
     name: "cluster-issuer"
   commonName: argo.internal
   dnsNames:
