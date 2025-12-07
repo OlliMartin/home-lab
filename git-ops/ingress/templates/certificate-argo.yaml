@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert-internal-argo
+spec:
+  secretName: cert-internal-argo-tls
+  issuerRef:
+    name: "cluster-issuer"
+  commonName: argo.internal
+  dnsNames:
+    - www.argo.internal
+  usages:
+    - digital signature
+    - key encipherment
+    - cert sign
+    - client auth
+    - server auth 
