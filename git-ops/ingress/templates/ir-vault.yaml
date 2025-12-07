@@ -9,6 +9,10 @@ spec:
     kind: ClusterIssuer
     name: "cluster-issuer"
   commonName: vault.internal
+  uris:
+    - https://vault.internal
+  dnsNames:
+    - vault.internal
   usages:
     - digital signature
     - key encipherment
