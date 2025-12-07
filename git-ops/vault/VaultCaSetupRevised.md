@@ -103,7 +103,8 @@ Since I want to use the PKI exclusively for cert-manager, I create a role for it
 ```sh
 vault write pki_int/roles/cert-manager \
     allowed_domains=internal \
-    allow_subdomains=true max_ttl=72h
+    allow_subdomains=true max_ttl=72h \
+    allowed_uri_sans="*.internal"
 ```
 
 ### Enabling App Role

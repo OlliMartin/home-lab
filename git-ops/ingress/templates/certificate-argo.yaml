@@ -11,6 +11,8 @@ spec:
   commonName: argo.internal
   uris:
     - https://argo.internal
+  dnsNames:
+    - argo.internal
   usages:
     - digital signature
     - key encipherment
