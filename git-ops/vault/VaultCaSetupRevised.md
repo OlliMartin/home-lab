@@ -111,6 +111,9 @@ vault write pki_int/roles/cert-manager \
 
 ```sh
 vault auth enable approle
+
+# Note: Token TTL of 24h applies to the secret-id which is currently in stored as a k8s secret.
+# That means cert-renewal will break almost immediately.
 vault write -f auth/approle/role/cert-role secret_id_ttl=24h \
   token_ttl=24h token_max_ttl=24h token_policies="pki pki_int"
   
