@@ -7,7 +7,7 @@ pihole:
   persistentVolumeClaim:
     enabled: true
     accessModes:
-      - ReadWrite
+      - ReadWriteMany
     
   replicaCount: 3
     
