@@ -7,9 +7,9 @@ pihole:
   persistentVolumeClaim:
     enabled: true
     accessModes:
-      - ReadWriteMany
+      - ReadWriteOnce
     
-  replicaCount: 3
+  replicaCount: 1
     
   # No DNS used here, just pointing to cluster-internal service ips
   podDnsConfig:
