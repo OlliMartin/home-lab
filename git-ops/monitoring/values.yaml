@@ -83,6 +83,7 @@ k8s-monitoring:
       - ingress
       - rook-ceph
       - vault
+      - dns-external
 
   nodeLogs:
     enabled: true
@@ -129,6 +130,7 @@ k8s-monitoring:
       - ingress
       - rook-ceph
       - vault
+      - dns-external
 
   applicationObservability:
     enabled: true

@@ -1,0 +1,21 @@
+pihole:
+  dnsmasq:
+    customDnsEntries:
+      - address=/vault.internal/10.5.0.100
+      - address=/test.internal/10.5.0.100
+
+  persistentVolumeClaim:
+    enabled: false
+    
+  replicaCount: 3
+    
+  # No DNS used here, just pointing to cluster-internal service ips
+  podDnsConfig:
+    enabled: false
+  
+  admin:
+    enabled: false
+
+  serviceDns:
+    type: NodePort
+    port: 5353
