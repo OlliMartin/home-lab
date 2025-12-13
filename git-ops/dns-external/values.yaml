@@ -27,6 +27,6 @@ pihole:
       cpu: 100m
       memory: 128Mi
 
-  extraEnv:
+  extraEnvVars:
     FTLCONF_dns_listeningMode: SINGLE
     FTLCONF_misc_dnsmasq_lines: '["address=/test.internal/10.5.0.100"]'
