@@ -1,8 +1,4 @@
 pihole:
-#  dnsmasq:
-#    customDnsEntries:
-#      - address=/vault.internal/10.5.0.100
-
   persistentVolumeClaim:
     enabled: false
     
@@ -16,8 +12,7 @@ pihole:
     enabled: false
 
   serviceDns:
-    type: NodePort
-    port: 5353
+    loadBalancerIP: 10.43.100.100
     
   resources:
     limits:
@@ -28,6 +23,5 @@ pihole:
       memory: 128Mi
 
   extraEnvVars:
-    FTLCONF_dns_listeningMode: SINGLE
     FTLCONF_misc_dnsmasq_lines: |
       address=/.internal/10.5.0.100
