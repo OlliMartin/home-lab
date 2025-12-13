@@ -1,15 +1,12 @@
 pihole:
-  dnsmasq:
-    customDnsEntries:
-      - address=/vault.internal/10.5.0.100
-      - address=/test.internal/10.5.0.100
+#  dnsmasq:
+#    customDnsEntries:
+#      - address=/vault.internal/10.5.0.100
 
   persistentVolumeClaim:
-    enabled: true
-    accessModes:
-      - ReadWriteOnce
+    enabled: false
     
-  replicaCount: 1
+  replicaCount: 3
     
   # No DNS used here, just pointing to cluster-internal service ips
   podDnsConfig:
@@ -29,3 +26,7 @@ pihole:
     requests:
       cpu: 100m
       memory: 128Mi
+
+  extraEnv:
+    FTLCONF_dns_listeningMode: SINGLE
+    FTLCONF_misc_dnsmasq_lines: '["address=/test.internal/10.5.0.100"]'
